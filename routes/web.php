@@ -2,6 +2,9 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -13,6 +16,50 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+//Fix to Method OPTIONS
+$router->options('/{any:.*}', function () {
+    return response(['status' => 'success'])
+        ->header('Access-Control-Allow-Methods','OPTIONS, GET, POST, PUT, DELETE')
+        ->header('Access-Control-Allow-Headers', 'Authorization, Content-Type, Origin');
 });
+
+$router->get('/', function () use ($router) {
+    // return $router->app->version();
+    return response()->json([
+        'success' => true,
+        'framework' => $router->app->version()
+    ]);
+});
+
+// $router->group(['middleware' => 'auth'], function() use ($router){
+    $router->get('key', function(){
+        return response()->json([
+            'success' => false,
+            'key' => Str::random(32)
+        ]);
+    });
+//});
+
+
+$router->get('hash/{value}', function($value){
+    /*
+    $valueHash = password_hash($value, PASSWORD_BCRYPT, ['cost' => 10]);
+    $info = password_get_info( $valueHash );
+    $verify = password_verify($value, $valueHash);
+    */
+
+    $valueHash  = Hash::make( $value );
+    $info       = Hash::info( $valueHash );
+    $verify     = Hash::check( $value, $valueHash );
+
+    return response()->json([
+        'success'     => true,
+        'data' => [
+            'value'     => $value,
+            'valueHash' => $valueHash,
+            'infoHash'  => $info,
+            'verifyHash'=> $verify
+        ]
+    ]);
+});
+
