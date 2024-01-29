@@ -17,8 +17,11 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->boolean('status');
+            $table->boolean('status')->default(true);
             $table->timestamps();
+            $this->addColumn('timestamp', $column, compact('precision'));
+            $this->timestamp('created_at', $precision)->nullable();
+            $this->timestamp('updated_at', $precision)->nullable();
         });
     }
 

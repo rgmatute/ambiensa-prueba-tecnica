@@ -1,9 +1,13 @@
 <?php
 
-/** @var \Laravel\Lumen\Routing\Router $router */
-
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+
+require __DIR__.'/../routes/cliente.php';
+require __DIR__ . '/../routes/mock.php';
+require __DIR__.'/../routes/webhook.php';
+
+/** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
 |--------------------------------------------------------------------------
@@ -42,15 +46,15 @@ $router->get('/', function () use ($router) {
 
 
 $router->get('hash/{value}', function($value){
-    /*
     $valueHash = password_hash($value, PASSWORD_BCRYPT, ['cost' => 10]);
     $info = password_get_info( $valueHash );
     $verify = password_verify($value, $valueHash);
-    */
 
+    /*
     $valueHash  = Hash::make( $value );
     $info       = Hash::info( $valueHash );
     $verify     = Hash::check( $value, $valueHash );
+    */
 
     return response()->json([
         'success'     => true,

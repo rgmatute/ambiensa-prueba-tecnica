@@ -8,8 +8,11 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
+use Symfony\Component\HttpFoundation\Response;
 
-class Handler extends ExceptionHandler
+class
+
+Handler extends ExceptionHandler
 {
     /**
      * A list of the exception types that should not be reported.
@@ -49,6 +52,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        return parent::render($request, $exception);
+        // return parent::render($request, $exception);
+        return response()->json([
+            'success' => false,
+            'message' => empty( $exception->getMessage()) ? $exception->getTrace(): $exception->getMessage()
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
