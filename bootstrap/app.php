@@ -80,6 +80,16 @@ $app->configure('app');
 //     'auth' => App\Http\Middleware\Authenticate::class,
 // ]);
 
+$app->middleware([
+    App\Http\Middleware\RequestsAcceptJson::class,
+    App\Http\Middleware\CorsMiddleware::class,
+]);
+
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\ValidarToken::class,
+]);
+
+
 /*
 |--------------------------------------------------------------------------
 | Register Service Providers

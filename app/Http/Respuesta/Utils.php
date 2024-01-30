@@ -41,4 +41,12 @@ trait Utils
     public function verifyPassword($password, $password_hash) {
         return password_verify($password, $password_hash);
     }
+
+    public function successLogin($bearerToken, $statusCode = Response::HTTP_OK) : JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'id_token' => $bearerToken
+        ], $statusCode);
+    }
 }

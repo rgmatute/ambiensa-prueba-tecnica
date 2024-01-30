@@ -1,5 +1,6 @@
 <?php
 namespace App\AuthToken;
+use App\Exceptions\GenericException;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\ValidationData;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
@@ -98,6 +99,39 @@ class JWToken{
         }
 
         return $informacion;
+    }
+
+    /**
+     * @throws GenericException
+     */
+    public function isValid($token) : bool{
+        $informacion	= [];
+        $parser 		= new Parser();
+        $signer 		= new Sha256();
+        $data 			= new ValidationData(); # Valida basado en la fecha y hora actual (iat, nbf and exp)
+        try {
+            $strToken 	= (string)$token;
+            if (!Cache::has($strToken)) {
+                throw new GenericException("La sesion no es valida!", 401);
+            }
+            $token 		= $parser->parse($strToken); # Parsea desde una string
+            $token->getHeaders();	# Obtiene todo el header del token
+            $token->getClaims(); 	# Obtiene todos los claims del token
+            $userData 	= $token->getClaim('data');
+            $iatData 	= $token->getClaim('iat');
+            $data->setIssuer($this->emisorToken);
+            $data->setAudience($userData->username);
+            $data->setId(md5($userData->username . $iatData));
+            if($token->validate($data) and $token->verify($signer, $this->key)){ # Si token es válido
+                // el token si es valido
+            }else{	# Token no es válido
+                throw new GenericException("La sesion no es valida!", 401);
+            }
+        }catch (\Exception $e){
+            throw new GenericException("La sesion no es valida!", 401);
+        }
+
+        return true;
     }
 }
 ?>
