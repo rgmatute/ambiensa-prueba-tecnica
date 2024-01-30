@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\AuthToken\JWToken;
-use App\Domain\Clients;
-use App\Repository\ClientsRepository;
 use App\Service\ClientsService;
 use Exception;
-use Illuminate\Console\View\Components\Mutators\EnsureDynamicContentIsHighlighted;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Respuesta\Utils;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ClientsController extends Controller
 {
@@ -27,23 +25,15 @@ class ClientsController extends Controller
     }
 
     // GET
-    public function index(Request $request){
+    public function index(Request $request): LengthAwarePaginator
+    {
         // return Clients::all();
         return $this->clientsService->findAll();
     }
 
     public function show($id, Request $request){
         // return Clients::findOrFail($id);
-
-        if(!is_numeric($id)){
-            return $this->errorResponse("Necesita proporcionar un código numerico!", 404);
-        }
-
         $response = $this->clientsService->findById($id);
-
-        if(!isset($response)){
-            return $this->errorResponse("No existe el registro con id '$id'", 404);
-        }
 
         return $this->successResponse($response);
     }
@@ -58,6 +48,38 @@ class ClientsController extends Controller
         $response = $this->clientsService->created($inData, $this->jwtInfo);
 
         return $this->successResponse($response);
+    }
 
+    /**
+     * @throws Exception
+     */
+    public function update(Request $request, $id): JsonResponse
+    {
+        $inData = json_decode($request->getContent(), true);
+
+        $response = $this->clientsService->update($inData, $this->jwtInfo, $id);
+
+        return $this->successResponse($response);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function delete(Request $request, $id): JsonResponse
+    {
+        $this->clientsService->delete($id, $this->jwtInfo);
+
+        return $this->successOnlyMessage();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function search(Request $request) : LengthAwarePaginator
+    {
+        $key = $request->query('key');
+        $value = $request->query('value');
+
+        return $this->clientsService->search($key, $value, $this->jwtInfo);
     }
 }

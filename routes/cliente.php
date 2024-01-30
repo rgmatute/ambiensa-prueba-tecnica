@@ -6,6 +6,9 @@
         $router->get('/clients', 'ClientsController@index');
         $router->get('/clients/{id}', 'ClientsController@show');
         $router->post('/clients', 'ClientsController@store');
+        $router->put('/clients/{id}', 'ClientsController@update');
+        $router->delete('/clients/{id}', 'ClientsController@delete');
+        $router->get('/client/search', 'ClientsController@search');
         // $router->post('/accounts/resend-code', 'AccountController@resendCode');
 
         // $router->post('/accounts/recovery-password', 'AccountController@recoveryPassword');

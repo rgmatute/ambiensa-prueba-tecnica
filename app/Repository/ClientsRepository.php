@@ -3,44 +3,52 @@
 namespace App\Repository;
 
 use App\Domain\Clients;
-use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
-use Ramsey\Uuid\Type\Integer;
-use Throwable;
 
 class ClientsRepository
 {
 
-    public function clients(): \Illuminate\Database\Query\Builder
+    public function clients(): Builder
     {
         return DB::table('clients');
     }
 
-    public function findAll(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function findAll(): LengthAwarePaginator
     {
-        return $this->clients()
-            ->paginate(20);
+        return Clients::where('status', true)->paginate(20);
     }
 
-    /**
-     * @throws Exception
-     */
     public function findById( int $id){
-        return $this->clients()
-            ->where('id', $id)
-            ->first();
+        return Clients::where('id', $id)->first();
     }
 
     public function findByEmail($email){
-        return $this->clients()
-            ->where('email', $email)
-            ->first();
+        return Clients::where('email', $email)->first();
     }
 
     public function save(Array $client) : int {
-        return $this->clients()->insertGetId($client);
-            // ->where('id', $id)
-            // ->first();
+        return Clients::insertGetId($client);
     }
 
+    public function update(Array $client, $id) : int {
+        return Clients::where('id', $id)->update($client);
+    }
+
+    public function delete($id) : int {
+        return Clients::where('id', $id)->update(['status' => false]);
+    }
+
+    public function search($key, $value) {
+        return Clients::where($key, 'like', '%'.$value.'%')->paginate();
+    }
+
+    public function isActiveById($id) {
+        return Clients::where('id', $id)->where('status', true)->first();
+    }
+
+    public function findByIdAndStatus( int $id, bool $status){
+        return Clients::where('id', $id)->where('status', $status)->first();
+    }
 }

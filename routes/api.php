@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Hash;
 require __DIR__.'/../routes/cliente.php';
 require __DIR__ . '/../routes/mock.php';
 require __DIR__.'/../routes/webhook.php';
+require __DIR__.'/../routes/account.php';
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 

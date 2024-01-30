@@ -13,7 +13,15 @@ trait Utils
         return response()->json([
             'success' => true,
             'data' => $data,
-            'message' => 'Transacción realizada correctamnente!'
+            'message' => 'Transacción realizada correctamente!'
+        ], $statusCode);
+    }
+
+    public function successOnlyMessage($statusCode = Response::HTTP_OK) : JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Transacción realizada correctamente!'
         ], $statusCode);
     }
 
@@ -24,5 +32,13 @@ trait Utils
             'success' => false,
             'message' => $message ?? 'aaaaaaaaa'
         ], $statusCode);
+    }
+
+    public function password($value) {
+        return password_hash($value, PASSWORD_BCRYPT, ['cost' => 10]);
+    }
+
+    public function verifyPassword($password, $password_hash) {
+        return password_verify($password, $password_hash);
     }
 }

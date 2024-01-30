@@ -53,9 +53,19 @@ Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         // return parent::render($request, $exception);
+
+        if ($exception instanceof GenericException) {
+            return response()->json([
+                'success' => false,
+                'message' => empty( $exception->getMessage()) ? $exception->getTrace(): $exception->getMessage(),
+                'errorCode' => spl_object_hash($exception)
+            ], $exception->getStatus());
+        }
+
         return response()->json([
             'success' => false,
-            'message' => empty( $exception->getMessage()) ? $exception->getTrace(): $exception->getMessage()
+            'message' => empty( $exception->getMessage()) ? $exception->getTrace(): $exception->getMessage(),
+            'errorCode' => spl_object_hash($exception)
         ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
